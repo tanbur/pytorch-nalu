@@ -25,8 +25,7 @@ class NAC(Module):
         weight_sigma: the learnable weights of the module of shape
             `(out_features x in_features)`
 
-    Examples::
-
+    Examples:
         >>> m = NAC(20, 30)
         >>> input = torch.randn(128, 20)
         >>> output = m(input)
@@ -94,8 +93,7 @@ class NALU(Module):
         gate_weights: the learnable weights of the gate that interpolates between addition and multiplication of shape
             `(out_features x in_features)`
 
-    Examples::
-
+    Examples:
         >>> m = NALU(20, 30)
         >>> input = torch.randn(128, 20)
         >>> output = m(input)
