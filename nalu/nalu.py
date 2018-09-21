@@ -35,13 +35,13 @@ class NAC(Module):
         >>> m = NAC(2, 1)
         >>> _ = m.weight_tanh.data.fill_(4), m.weight_sigma.data.fill_(4)
         >>> m.weight
-        tensor([[ 0.9814,  0.9814]])
+        tensor([[0.9814, 0.9814]], grad_fn=<ThMulBackward>)
         >>> input = torch.Tensor([[0, 1], [2, 5], [-1, 4]])
         >>> output = m(input)
         >>> output
-        tensor([[ 0.9814],
-                [ 6.8695],
-                [ 2.9441]])
+        tensor([[0.9814],
+                [6.8695],
+                [2.9441]], grad_fn=<MmBackward>)
     """
 
     def __init__(self, in_features, out_features):
@@ -63,7 +63,7 @@ class NAC(Module):
         Effective weight of NAC
         :return:
         """
-        return F.tanh(self.weight_tanh) * F.sigmoid(self.weight_sigma)
+        return torch.tanh(self.weight_tanh) * torch.sigmoid(self.weight_sigma)
 
     def forward(self, input):
         return F.linear(input, weight=self.weight)
@@ -106,13 +106,13 @@ class NALU(Module):
         >>> _ = (m.multiplication_cell.weight_tanh.data.fill_(4), m.multiplication_cell.weight_sigma.data.fill_(4),
         ...     m.gate_weights.data.fill_(-4))
         >>> m.multiplication_cell.weight
-        tensor([[ 0.9814,  0.9814]])
+        tensor([[0.9814, 0.9814]], grad_fn=<ThMulBackward>)
         >>> input = torch.Tensor([[0, 10], [2, 5], [-1, 4]])
         >>> output = m(input)
         >>> torch.round(output)
-        tensor([[  0.],
-                [ 10.],
-                [  4.]])
+        tensor([[ 0.],
+                [10.],
+                [ 4.]], grad_fn=<RoundBackward>)
     """
 
     def __init__(self, in_features, out_features):
@@ -133,7 +133,7 @@ class NALU(Module):
     def forward(self, input):
         summation = self.addition_cell(input)
         multiplication = torch.exp(self.multiplication_cell(torch.log(torch.abs(input) + 0.001)))
-        gate = F.sigmoid(F.linear(input=input, weight=self.gate_weights))
+        gate = torch.sigmoid(F.linear(input=input, weight=self.gate_weights))
 
         return gate * summation + (1 - gate) * multiplication
 
