@@ -60,7 +60,6 @@ def train(model, loss_function, optimizer, train_loader, val_loader=None, max_ep
             loss = loss_function(output, batch_target.unsqueeze(1))
 
             # Calculate the eav of batch loss
-            # loss += 0.05 * sum(l1_loss(params, torch.zeros_like(params)) for params in net.parameters()) / total_params
             loss_eav += eav_lambda * loss - eav_lambda * loss_eav
 
             # zero the gradient buffers
@@ -73,14 +72,14 @@ def train(model, loss_function, optimizer, train_loader, val_loader=None, max_ep
         if val_loader is not None:
             epoch_loss = validate(model=model, loss_function=loss_function, validation_loader=val_loader)
         else:
-            epoch_loss = loss_eav
+            epoch_loss = loss_eav.clone()
         losses.append(epoch_loss)
 
         # epoch_print = DEBUG and (not (epoch % int(num_epochs / 10)))
         if verbose:
             print('\n')
-            print('Epoch {}: loss: {}'.format(epoch, epoch_loss))
-            print('Loss: {}'.format(losses[-1]))
+            print('Epoch {}'.format(epoch))
+            print('Loss: {}'.format(epoch_loss))
 
         if verbose and debug:
             layer = model.fc3
@@ -97,6 +96,7 @@ def train(model, loss_function, optimizer, train_loader, val_loader=None, max_ep
             print(layer.bias.grad)
 
     if verbose:
+        print('\n')
         print('Initial loss: {:.3f}'.format(losses[0]))
         print('Final loss: {:.3f}'.format(losses[-1]))
     return losses
