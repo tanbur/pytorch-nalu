@@ -50,7 +50,6 @@ class TestScalarOperation(unittest.TestCase):
         """
         Test a networks ability to learn scalar addition a+b that generalises.
         """
-
         training_data = get_int_func_dataloader(10000, 100, func, xdim=2)
         test_data = get_int_func_dataloader(10000, 100000, func, xdim=2)
 
@@ -60,7 +59,7 @@ class TestScalarOperation(unittest.TestCase):
         model = model(2, 1)
         optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
         losses = train(model=model, loss_function=loss_function, optimizer=optimizer, train_loader=training_data,
-                       val_loader=test_data, verbose=verbose, max_epochs=10)
+                       val_loader=test_data, verbose=False, max_epochs=10)
 
         training_loss = validate(model, loss_function, training_data)
         test_loss = validate(model, loss_function, test_data)
@@ -92,6 +91,20 @@ class TestScalarOperation(unittest.TestCase):
         training_loss, test_loss = self._test_scalar_operation(partial(torch.prod, dim=1), model=NALU, verbose=verbose)
         self.assertAlmostEqual(training_loss, 0.040132813, places=3)
         self.assertAlmostEqual(test_loss, 198006.06, places=0)
+
+    def test_scalar_roots(self, verbose=False):
+        """
+            Test the square root.
+        """
+        torch.manual_seed(1)
+
+        def f(tensor):
+            """ (a, b) -> sqrt(a) """
+            return torch.sqrt(tensor[:, 0])
+
+        training_loss, test_loss = self._test_scalar_operation(f, model=NALU, verbose=verbose)
+        self.assertAlmostEqual(training_loss, 0.36400747, places=3)
+        self.assertAlmostEqual(test_loss, 30.24435, places=2)
 
 
 if __name__ == '__main__':
