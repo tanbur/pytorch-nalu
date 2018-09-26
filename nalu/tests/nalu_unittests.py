@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import TensorDataset, DataLoader
 
 from nalu.nalu import NALU, NAC
-from tests.common import train, validate
+from nalu.tests.common import train, validate
 
 
 def get_int_func_dataloader(n_samples, range_, func, xdim=1):
